@@ -70,11 +70,11 @@
     }
 
     .admin-layout {
-        @apply mx-auto grid max-w-7xl gap-5 px-4 py-8 md:py-10 xl:grid-cols-[220px,minmax(0,1fr)];
+        @apply mx-auto grid max-w-7xl gap-4 px-4 py-8 md:py-10 xl:grid-cols-[192px,minmax(0,1fr)];
     }
 
     .admin-sidebar {
-        @apply h-fit rounded-2xl border border-slate-200 bg-slate-100 p-4 text-slate-900 shadow-sm xl:sticky xl:top-6;
+        @apply h-fit rounded-2xl border border-slate-200 bg-slate-100 p-3 text-slate-900 shadow-sm xl:sticky xl:top-6;
     }
 
     .admin-sidebar-title {
@@ -86,7 +86,7 @@
     }
 
     .admin-sidebar-link {
-        @apply rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900;
+        @apply rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900;
     }
 
     .admin-sidebar-link-active {

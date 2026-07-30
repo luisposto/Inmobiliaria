@@ -22,6 +22,29 @@ foreach ($ciudades as $ciudad) {
     $provinciaId = (int) ($ciudad['provincia_id'] ?? 0);
     $ciudadesPorProvincia[$provinciaId] = ($ciudadesPorProvincia[$provinciaId] ?? 0) + 1;
 }
+
+$provinciaSeleccionadaId = $ciudadEditando !== null
+    ? (int) ($ciudadEditando['provincia_id'] ?? 0)
+    : (int) ($_GET['provincia_id'] ?? 0);
+$provinciaSeleccionada = null;
+foreach ($provincias as $provincia) {
+    if ((int) ($provincia['id'] ?? 0) === $provinciaSeleccionadaId) {
+        $provinciaSeleccionada = $provincia;
+        break;
+    }
+}
+if ($provinciaSeleccionada === null) {
+    $provinciaSeleccionadaId = 0;
+}
+
+$ciudadesFiltradas = [];
+if ($provinciaSeleccionadaId > 0) {
+    foreach ($ciudades as $ciudad) {
+        if ((int) ($ciudad['provincia_id'] ?? 0) === $provinciaSeleccionadaId) {
+            $ciudadesFiltradas[] = $ciudad;
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -63,9 +86,14 @@ foreach ($ciudades as $ciudad) {
                     <div>
                         <span class="eyebrow">Administracion</span>
                         <h1 class="section-heading mb-2">Ciudades y provincias</h1>
-                        <p class="section-copy">Gestiona el catalogo de provincias argentinas y da de alta ciudades vinculandolas desde un combo.</p>
+                        <p class="section-copy">Explora el catalogo por provincias y administra las ciudades asociadas desde una vista mas ordenada.</p>
                     </div>
-                    <a href="ciudades.php?new=1" class="btn-secondary">Nueva ciudad</a>
+                    <div class="flex flex-wrap gap-3">
+                        <?php if ($provinciaSeleccionadaId > 0): ?>
+                            <a href="ciudades.php" class="btn-secondary">Ver provincias</a>
+                        <?php endif; ?>
+                        <a href="ciudades.php?new=1<?= $provinciaSeleccionadaId > 0 ? '&provincia_id=' . $provinciaSeleccionadaId : '' ?>" class="btn-secondary">Nueva ciudad</a>
+                    </div>
                 </div>
             </section>
 
@@ -107,7 +135,7 @@ foreach ($ciudades as $ciudad) {
                             <select name="provincia_id" class="field-input" required>
                                 <option value="">Seleccionar provincia</option>
                                 <?php foreach ($provincias as $provincia): ?>
-                                    <option value="<?= (int) $provincia['id'] ?>" <?= ((string) ($ciudadEditando['provincia_id'] ?? '') === (string) $provincia['id']) ? 'selected' : '' ?>>
+                                    <option value="<?= (int) $provincia['id'] ?>" <?= ((string) ($ciudadEditando['provincia_id'] ?? $provinciaSeleccionadaId) === (string) $provincia['id']) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($provincia['nombre']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -128,7 +156,7 @@ foreach ($ciudades as $ciudad) {
                         </label>
 
                         <div class="flex justify-end gap-3 pt-2">
-                            <a href="ciudades.php" class="btn-secondary">Cancelar</a>
+                            <a href="ciudades.php<?= $provinciaSeleccionadaId > 0 ? '?provincia_id=' . $provinciaSeleccionadaId : '' ?>" class="btn-secondary">Cancelar</a>
                             <button type="submit" class="btn-accent" <?= ($tablaUbicacionesDisponible && $provincias !== []) ? '' : 'disabled' ?>>
                                 <?= $ciudadEditando ? 'Guardar cambios' : 'Crear ciudad' ?>
                             </button>
@@ -137,81 +165,87 @@ foreach ($ciudades as $ciudad) {
                 <?php endif; ?>
 
                 <section class="surface-card admin-split-table p-5 md:p-6">
-                    <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                        <div>
-                            <h2 class="text-lg font-semibold text-slate-900">Ciudades cargadas</h2>
-                            <p class="text-sm text-slate-500">Cada ciudad queda relacionada con una provincia de Argentina.</p>
-                        </div>
-                        <p class="shrink-0 text-sm text-slate-500"><?= count($ciudades) ?> ciudad(es)</p>
-                    </div>
-
-                    <div class="table-shell w-full overflow-hidden">
-                        <table class="table-compact">
-                            <thead>
-                                <tr>
-                                    <th>Ciudad</th>
-                                    <th>Provincia</th>
-                                    <th>Estado</th>
-                                    <th class="text-right">Acc.</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!$ciudades): ?>
-                                    <tr>
-                                        <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-400">Todavia no hay ciudades cargadas.</td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($ciudades as $ciudad): ?>
-                                        <tr>
-                                            <td class="font-semibold text-slate-800"><?= htmlspecialchars($ciudad['nombre']) ?></td>
-                                            <td class="text-sm text-slate-500"><?= htmlspecialchars($ciudad['provincia_nombre']) ?></td>
-                                            <td>
-                                                <span class="pill <?= !empty($ciudad['activo']) ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-100 text-slate-700' ?>">
-                                                    <?= !empty($ciudad['activo']) ? 'Activa' : 'Inactiva' ?>
-                                                </span>
-                                            </td>
-                                            <td class="text-right">
-                                                <?php if ($tablaUbicacionesDisponible): ?>
-                                                    <div class="inline-flex items-center gap-2">
-                                                        <a href="ciudades.php?id=<?= (int) $ciudad['id'] ?>" class="btn-primary px-3 py-2 text-xs">Editar</a>
-                                                        <form action="../backend/eliminar_ciudad.php" method="POST" onsubmit="return confirm('Eliminar esta ciudad?');">
-                                                            <input type="hidden" name="id" value="<?= (int) $ciudad['id'] ?>">
-                                                            <button class="btn-danger px-3 py-2 text-xs">Eliminar</button>
-                                                        </form>
-                                                    </div>
-                                                <?php else: ?>
-                                                    <span class="text-xs text-slate-400">Sin acciones</span>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <section class="surface-card admin-split-table p-5 md:p-6">
                     <div class="mb-5 flex flex-col gap-2">
-                        <h2 class="text-lg font-semibold text-slate-900">Provincias base</h2>
-                        <p class="text-sm text-slate-500">Catalogo inicial de provincias argentinas disponible para relacionar ciudades.</p>
+                        <?php if ($provinciaSeleccionada !== null): ?>
+                            <span class="eyebrow">Provincia</span>
+                            <h2 class="text-lg font-semibold text-slate-900"><?= htmlspecialchars($provinciaSeleccionada['nombre']) ?></h2>
+                            <p class="text-sm text-slate-500">Consulta y administra las ciudades asociadas a esta provincia.</p>
+                        <?php else: ?>
+                            <h2 class="text-lg font-semibold text-slate-900">Provincias base</h2>
+                            <p class="text-sm text-slate-500">Ingresa a una provincia para ver y administrar sus ciudades asociadas.</p>
+                        <?php endif; ?>
                     </div>
 
-                    <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                        <?php foreach ($provincias as $provincia): ?>
-                            <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div>
-                                        <p class="text-sm font-semibold text-slate-800"><?= htmlspecialchars($provincia['nombre']) ?></p>
-                                        <p class="text-xs text-slate-500"><?= (int) ($ciudadesPorProvincia[(int) $provincia['id']] ?? 0) ?> ciudad(es)</p>
+                    <?php if ($provinciaSeleccionada === null): ?>
+                        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                            <?php foreach ($provincias as $provincia): ?>
+                                <a href="ciudades.php?provincia_id=<?= (int) $provincia['id'] ?>" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-slate-300 hover:bg-white">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div>
+                                            <p class="text-sm font-semibold text-slate-800"><?= htmlspecialchars($provincia['nombre']) ?></p>
+                                            <p class="text-xs text-slate-500"><?= (int) ($ciudadesPorProvincia[(int) $provincia['id']] ?? 0) ?> ciudad(es)</p>
+                                        </div>
+                                        <span class="pill <?= !empty($provincia['activo']) ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-100 text-slate-700' ?>">
+                                            <?= !empty($provincia['activo']) ? 'Activa' : 'Inactiva' ?>
+                                        </span>
                                     </div>
-                                    <span class="pill <?= !empty($provincia['activo']) ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-100 text-slate-700' ?>">
-                                        <?= !empty($provincia['activo']) ? 'Activa' : 'Inactiva' ?>
-                                    </span>
-                                </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="mb-5 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800"><?= htmlspecialchars($provinciaSeleccionada['nombre']) ?></p>
+                                <p class="text-xs text-slate-500"><?= count($ciudadesFiltradas) ?> ciudad(es) asociada(s)</p>
                             </div>
-                        <?php endforeach; ?>
-                    </div>
+                            <span class="pill <?= !empty($provinciaSeleccionada['activo']) ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-100 text-slate-700' ?>">
+                                <?= !empty($provinciaSeleccionada['activo']) ? 'Activa' : 'Inactiva' ?>
+                            </span>
+                        </div>
+
+                        <div class="table-shell w-full overflow-hidden">
+                            <table class="table-compact">
+                                <thead>
+                                    <tr>
+                                        <th>Ciudad</th>
+                                        <th>Estado</th>
+                                        <th class="text-right">Acc.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (!$ciudadesFiltradas): ?>
+                                        <tr>
+                                            <td colspan="3" class="px-4 py-6 text-center text-sm text-slate-400">Todavia no hay ciudades cargadas para esta provincia.</td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($ciudadesFiltradas as $ciudad): ?>
+                                            <tr>
+                                                <td class="font-semibold text-slate-800"><?= htmlspecialchars($ciudad['nombre']) ?></td>
+                                                <td>
+                                                    <span class="pill <?= !empty($ciudad['activo']) ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-100 text-slate-700' ?>">
+                                                        <?= !empty($ciudad['activo']) ? 'Activa' : 'Inactiva' ?>
+                                                    </span>
+                                                </td>
+                                                <td class="text-right">
+                                                    <?php if ($tablaUbicacionesDisponible): ?>
+                                                        <div class="inline-flex items-center gap-2">
+                                                            <a href="ciudades.php?id=<?= (int) $ciudad['id'] ?>&provincia_id=<?= $provinciaSeleccionadaId ?>" class="btn-primary px-3 py-2 text-xs">Editar</a>
+                                                            <form action="../backend/eliminar_ciudad.php" method="POST" onsubmit="return confirm('Eliminar esta ciudad?');">
+                                                                <input type="hidden" name="id" value="<?= (int) $ciudad['id'] ?>">
+                                                                <button class="btn-danger px-3 py-2 text-xs">Eliminar</button>
+                                                            </form>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="text-xs text-slate-400">Sin acciones</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
                 </section>
             </section>
         </div>

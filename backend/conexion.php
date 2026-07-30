@@ -1,11 +1,12 @@
 <?php
 // Configuración de la base de datos
-$DB_HOST = 'localhost';
+$DB_HOST = '127.0.0.1';
+$DB_PORT = '3307';
 $DB_NAME = 'inmobiliaria';
 $DB_USER = 'root';
 $DB_PASS = '';
 
-$dsn = "mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4";
+$dsn = "mysql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME;charset=utf8mb4";
 
 try {
     $pdo = new PDO($dsn, $DB_USER, $DB_PASS, [
