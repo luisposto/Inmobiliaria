@@ -51,17 +51,31 @@ $socialLinks = [
         <div class="hero-video-overlay"></div>
 
         <div class="hero-video-grid">
-            <div class="hero-video-content">
-                <span class="eyebrow">Busqueda inmobiliaria</span>
-                <h1 class="section-heading mb-4">Encontra tu proxima propiedad en Rosario</h1>
-                <p class="section-copy mb-6 max-w-2xl">
-                    Casas, departamentos y PH en venta y alquiler. Filtra por zona, precio y tipo de propiedad.
-                </p>
-                <div class="flex flex-wrap gap-3 text-xs">
-                    <a href="propiedades.php?operacion=Venta" class="btn-secondary hero-video-action">En venta</a>
-                    <a href="propiedades.php?operacion=Alquiler" class="btn-secondary hero-video-action">En alquiler</a>
-                </div>
-            </div>
+	            <div class="hero-video-content">
+	                <span class="eyebrow">Busqueda inmobiliaria</span>
+	                <h1 class="section-heading mb-4">Encontra tu proxima propiedad en Rosario</h1>
+	                <p class="section-copy mb-6 max-w-2xl">
+	                    Casas, departamentos y PH en venta y alquiler. Filtra por zona, precio y tipo de propiedad.
+	                </p>
+	                <div class="flex flex-wrap gap-3 text-xs">
+	                    <a href="propiedades.php?operacion=Venta" class="btn-secondary hero-video-action">En venta</a>
+	                    <a href="propiedades.php?operacion=Alquiler" class="btn-secondary hero-video-action">En alquiler</a>
+	                </div>
+	                <div class="home-metrics mt-6 max-w-2xl">
+	                    <div class="home-metric">
+	                        <span class="home-metric-value"><?= count($destacadas) ?>+</span>
+	                        <span class="home-metric-label">Propiedades destacadas</span>
+	                    </div>
+	                    <div class="home-metric">
+	                        <span class="home-metric-value"><?= count($staffItems) ?>+</span>
+	                        <span class="home-metric-label">Asesores disponibles</span>
+	                    </div>
+	                    <div class="home-metric">
+	                        <span class="home-metric-value"><?= count($tipos) ?>+</span>
+	                        <span class="home-metric-label">Tipos de propiedad</span>
+	                    </div>
+	                </div>
+	            </div>
 
             <div class="surface-card hero-search-card bg-slate-950/90 p-5 text-white md:p-6">
                 <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Buscador rapido</p>
@@ -120,11 +134,11 @@ $socialLinks = [
         </div>
     </section>
 
-    <section class="space-y-4">
-        <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 class="text-lg font-semibold text-slate-950 md:text-xl">Propiedades destacadas</h2>
-            <a href="propiedades.php" class="btn-secondary px-3 py-2 text-xs">Ver todas</a>
-        </div>
+	    <section class="section-shell space-y-4">
+	        <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+	            <h2 class="text-lg font-semibold text-slate-950 md:text-xl">Propiedades destacadas</h2>
+	            <a href="propiedades.php" class="btn-secondary px-3 py-2 text-xs">Ver todas</a>
+	        </div>
 
         <?php if (!$destacadas): ?>
             <p class="surface-card-soft px-5 py-4 text-sm text-slate-500">Aun no cargaste propiedades destacadas. Marca alguna desde el panel admin.</p>
@@ -170,10 +184,10 @@ $socialLinks = [
                     </article>
                 <?php endforeach; ?>
             </div>
-        <?php endif; ?>
-    </section>
+	        <?php endif; ?>
+	    </section>
 
-    <section class="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white text-slate-950 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
+	    <section class="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white text-slate-950 shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
         <div class="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,_rgba(242,255,0,0.95),_rgba(242,255,0,0.62)_35%,_transparent_72%)]"></div>
         <div class="absolute right-0 top-24 h-52 w-52 rounded-full bg-emerald-400/10 blur-3xl"></div>
         <div class="absolute -left-16 bottom-0 h-48 w-48 rounded-full bg-cyan-300/10 blur-3xl"></div>
@@ -241,9 +255,25 @@ $socialLinks = [
                     </article>
                 <?php endforeach; ?>
             </div>
-        </div>
-    </section>
-</main>
+	        </div>
+	    </section>
+
+	    <section class="cta-band px-6 py-10 text-white md:px-10">
+	        <div class="cta-band-copy space-y-4">
+	            <span class="eyebrow border-white/10 bg-white/10 text-white">Asesoramiento personalizado</span>
+	            <h2 class="text-3xl font-extrabold tracking-tight md:text-5xl">
+	                Una experiencia inmobiliaria mas clara, agil y profesional.
+	            </h2>
+	            <p class="max-w-2xl text-sm leading-7 text-slate-200 md:text-base">
+	                Te ayudamos a comprar, vender o alquilar con acompanamiento real, respuestas rapidas y una seleccion cuidada de oportunidades.
+	            </p>
+	            <div class="flex flex-wrap gap-3">
+	                <a href="propiedades.php" class="btn-accent">Explorar propiedades</a>
+	                <a href="contacto.php" class="btn-secondary border-white/15 bg-white/10 text-white hover:bg-white/15 hover:text-white">Hablar con un asesor</a>
+	            </div>
+	        </div>
+	    </section>
+	</main>
 
 <footer class="app-footer border-t-0 bg-gradient-to-br from-cyan-50 via-white to-sky-100 text-slate-700">
     <div class="app-footer-inner block space-y-6">
